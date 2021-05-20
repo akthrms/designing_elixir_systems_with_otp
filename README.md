@@ -1,4 +1,4 @@
-Designing Elixir Systems with OTP: Write Highly Scalable, Self-Healing Software with Layers
+# Designing Elixir Systems with OTP: Write Highly Scalable, Self-Healing Software with Layers
 
 https://pragprog.com/titles/jgotp/designing-elixir-systems-with-otp/
 
