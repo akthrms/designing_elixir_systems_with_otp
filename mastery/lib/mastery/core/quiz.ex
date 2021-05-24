@@ -14,7 +14,7 @@ defmodule Mastery.Core.Quiz do
     struct!(__MODULE__, fields)
   end
 
-  def add_template(quiz, fields) do
+  def add_template(%__MODULE__{} = quiz, fields) do
     template = Template.new(fields)
 
     templates =
@@ -27,6 +27,6 @@ defmodule Mastery.Core.Quiz do
     %{quiz | templates: templates}
   end
 
-  defp add_to_list_or_nil(nil, template), do: [template]
-  defp add_to_list_or_nil(templates, template), do: [template | templates]
+  defp add_to_list_or_nil(nil, %Template{} = template), do: [template]
+  defp add_to_list_or_nil(templates, %Template{} = template), do: [template | templates]
 end

@@ -21,13 +21,13 @@ defmodule Mastery.Core.Question do
     generator.()
   end
 
-  defp compile(template, substitutions) do
+  defp compile(%Template{} = template, substitutions) do
     template.compiled
     |> Code.eval_quoted(assigns: substitutions)
     |> elem(0)
   end
 
-  defp evaluate(substitutions, template) do
+  defp evaluate(substitutions, %Template{} = template) do
     %__MODULE__{
       asked: compile(template, substitutions),
       substitutions: substitutions,
