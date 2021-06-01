@@ -29,22 +29,6 @@ defmodule Mastery.Boundary.QuizSession do
     {:via, Registry, {Mastery.Registry.QuizSession, name}}
   end
 
-  def init({quiz, email}) do
-    {:ok, {quiz, email}}
-  end
-
-  def handle_call(:select_question, _from, {quiz, email}) do
-    quiz = Quiz.select_question(quiz)
-    {:reply, quiz.current_question.asked, {quiz, email}}
-  end
-
-  def handle_call({:answer_question, answer}, _from, {quiz, email}) do
-    quiz
-    |> Quiz.answer_question(Response.new(quiz, email, answer))
-    |> Quiz.select_question()
-    |> maybe_finish(email)
-  end
-
   defp maybe_finish(nil, _email) do
     {:stop, :normal, :finished, nil}
   end
@@ -81,5 +65,23 @@ defmodule Mastery.Boundary.QuizSession do
 
   def end_sessions(names) do
     Enum.each(names, fn name -> GenServer.stop(via(name)) end)
+  end
+
+  @impl GenServer
+  def init({quiz, email}) do
+    {:ok, {quiz, email}}
+  end
+
+  @impl GenServer
+  def handle_call(:select_question, _from, {quiz, email}) do
+    quiz = Quiz.select_question(quiz)
+    {:reply, quiz.current_question.asked, {quiz, email}}
+  end
+
+  def handle_call({:answer_question, answer}, _from, {quiz, email}) do
+    quiz
+    |> Quiz.answer_question(Response.new(quiz, email, answer))
+    |> Quiz.select_question()
+    |> maybe_finish(email)
   end
 end

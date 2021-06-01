@@ -7,10 +7,6 @@ defmodule Mastery.Boundary.Proctor do
     GenServer.start_link(__MODULE__, [], options)
   end
 
-  def init(quizzes) do
-    {:ok, quizzes}
-  end
-
   def schedule_quiz(proctor \\ __MODULE__, quiz, temps, start_at, end_at) do
     quiz = %{
       fields: quiz,
@@ -20,19 +16,6 @@ defmodule Mastery.Boundary.Proctor do
     }
 
     GenServer.call(proctor, {:schedule_quiz, quiz})
-  end
-
-  def handle_call({:schedule_quiz, quiz}, _from, quizzes) do
-    now = DateTime.utc_now()
-
-    ordered_quizzes =
-      [quiz | quizzes]
-      |> start_quizzes(now)
-      |> Enum.sort(fn a, b ->
-        date_time_less_than_or_equal?(a.start_at, b.start_at)
-      end)
-
-    build_reply_with_timeout({:reply, :ok}, ordered_quizzes, now)
   end
 
   defp build_reply_with_timeout(reply, quizzes, now) do
@@ -83,6 +66,26 @@ defmodule Mastery.Boundary.Proctor do
     QuizManager.add_template(quiz.fields.title, template_fields)
   end
 
+  @impl GenServer
+  def init(quizzes) do
+    {:ok, quizzes}
+  end
+
+  @impl GenServer
+  def handle_call({:schedule_quiz, quiz}, _from, quizzes) do
+    now = DateTime.utc_now()
+
+    ordered_quizzes =
+      [quiz | quizzes]
+      |> start_quizzes(now)
+      |> Enum.sort(fn a, b ->
+        date_time_less_than_or_equal?(a.start_at, b.start_at)
+      end)
+
+    build_reply_with_timeout({:reply, :ok}, ordered_quizzes, now)
+  end
+
+  @impl GenServer
   def handle_info(:timeout, quizzes) do
     now = DateTime.utc_now()
     remaining_quizzes = start_quizzes(quizzes, now)
