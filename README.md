@@ -11,6 +11,6 @@ https://pragprog.com/titles/jgotp/designing-elixir-systems-with-otp/
 - Test Your Core
 - Isolate Process Machinery in a Boundary
 - Customize Your Lifecycle
-- Summon Your Workers
+- Summon Your Workers **<- ここまで完了**
 - Assemble Your Components
 - Test the Boundary
